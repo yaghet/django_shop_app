@@ -44,7 +44,9 @@ INSTALLED_APPS = [
 
     "frontend",
 
-    "shopapp.apps.ShopappConfig",
+    # "shopapp.apps.ShopappConfig",
+    "authapp.apps.AuthAppConfig",
+    "profileapp.apps.ProfileAppConfig",
 ]
 
 MIDDLEWARE = [
@@ -133,24 +135,24 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-DJANGO_LEVEL_LOGGING = getenv('DJANGO_LEVEL_LOGGING')
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    'formatters': {
-        'verbose': {
-            'format': "[%(asctime)s] %(levelname)s [%(name)s] %(message)s",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': DJANGO_LEVEL_LOGGING,
-    }
-}
+# DJANGO_LEVEL_LOGGING = getenv('DJANGO_LEVEL_LOGGING')
+#
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     'formatters': {
+#         'verbose': {
+#             'format': "[%(asctime)s] %(levelname)s [%(name)s] %(message)s",
+#         },
+#     },
+#     "handlers": {
+#         "console": {
+#             "class": "logging.StreamHandler",
+#             "formatter": "verbose",
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console'],
+#         'level': DJANGO_LEVEL_LOGGING,
+#     }
+# }
