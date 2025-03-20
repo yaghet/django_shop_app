@@ -3,7 +3,7 @@ info:
   title: Swagger Diploma Project
   version: 1.0.0
 tags:
-  - name: auth
+  - name: authapp
   - name: catalog
   - name: basket
   - name: order
@@ -14,7 +14,7 @@ paths:
   /sign-in:
     post:
       tags:
-        - auth
+        - authapp
       description: 'sign in'
       parameters:
         - name: username
@@ -39,7 +39,7 @@ paths:
   /sign-up:
     post:
       tags:
-        - auth
+        - authapp
       description: 'sign up'
       parameters:
         - name: name
@@ -69,7 +69,7 @@ paths:
   /sign-out:
     post:
       tags:
-        - auth
+        - authapp
       description: 'sign out'
       responses:
         '200':
