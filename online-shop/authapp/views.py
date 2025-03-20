@@ -27,24 +27,29 @@ class LoginView(APIView):
 
 class RegisterView(APIView):
 
-    """View представление для регистрации пользователя"""
+    """ View представление для регистрации пользователя """
 
     form_class = RegisterForm
 
     def post(self, request: Request):
+        try:
+            user_data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return Response({"Error": "Invalid JSON"}, status=status.HTTP_400_BAD_REQUEST)
 
-        form = self.form_class(data=request.data)
+        form = self.form_class(data=user_data)
 
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+
+            username = user_data.get("username")
+            password = user_data.get("password")
 
             if register_and_login(request, username, password):
                 return Response(status=status.HTTP_200_OK)
             else:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+                return Response({"Error": "Registration failed"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            raise ValidationError(form.errors)
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
