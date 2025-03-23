@@ -1,37 +1,38 @@
 from django.contrib.auth.models import User
-from django.core.validators import (EmailValidator, MaxLengthValidator,
-                                    MinLengthValidator)
 from django.db import models
 
 
-def upload_avatar_profile(instance, filename):
-    return "profiles/profile_{id}/preview/{filename}".format(
-        id=instance.pk, filename=filename,
+def upload_avatar_profile(instance, filename: str) -> str:
+    return "profile/avatar/profile_{id}/{filename}".format(
+        id=instance.user_profile.user.id, filename=filename,
     )
 
 
+class Avatar(models.Model):
+    class Meta:
+        verbose_name = "Avatar"
+        verbose_name_plural = "Avatars"
+
+    user_profile = models.OneToOneField(
+        "Profile", on_delete=models.CASCADE, null=True, blank=True, related_name="avatar_link"
+    )
+    src = models.ImageField(upload_to=upload_avatar_profile)
+    alt = models.CharField(max_length=12, default="avatar", verbose_name="Alt Image")
+
+
 class Profile(models.Model):
-
     class Meta:
-        verbose_name = 'Profile'
-        verbose_name_plural = 'Profiles'
+        verbose_name = "Profile"
+        verbose_name_plural = "Profiles"
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    middle_name = models.CharField(max_length=30)
-    email = models.EmailField(validators=[EmailValidator])
-    phone = models.CharField(max_length=30, validators=[MinLengthValidator(10), MaxLengthValidator(10)])
-
-    def __str__(self):
-        return f'Username: {self.user.username}'
-
-
-class ProfileImage(models.Model):
-    class Meta:
-        verbose_name = 'ProfileImage'
-        verbose_name_plural = 'ProfileImages'
-
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=upload_avatar_profile, null=True, blank=True)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    fullName = models.CharField(max_length=128, null=True, blank=True)
+    phone = models.CharField(max_length=12, null=True, blank=True)
+    email = models.EmailField(max_length=128, null=True, blank=True)
+    avatar = models.OneToOneField(
+        "Avatar",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="profile_link"
+    )
