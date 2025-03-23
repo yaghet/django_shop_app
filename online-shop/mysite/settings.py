@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from os import getenv
 from pathlib import Path
 from dotenv import load_dotenv
@@ -43,6 +44,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "frontend",
+    "django_filters",
+    "drf_spectacular",
+    "rest_framework",
 
     # "shopapp.apps.ShopappConfig",
     "authapp.apps.AuthAppConfig",
@@ -124,11 +128,29 @@ USE_I18N = True
 
 USE_TZ = True
 
+#REST Framework
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend",],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'My Online Store',
+    'DESCRIPTION': 'Online Store ',
+    'VERSION': '0.0.1',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+AVATAR_MAX_SIZE = 1 * 1024 * 1024
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
