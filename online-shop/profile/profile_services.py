@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.request import Request
 
 from mysite.settings import AVATAR_MAX_SIZE
-from profileapp.models import Avatar, Profile
+from profile.models import Avatar, Profile
 
 
 def validate_image_func(request: Request) -> Union[str, bool]:

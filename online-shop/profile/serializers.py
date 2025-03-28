@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from profileapp.models import Avatar, Profile
+from profile.models import Avatar, Profile
 
 
 class AvatarSerializer(serializers.ModelSerializer):
@@ -40,3 +40,10 @@ class PasswordSerializer(serializers.ModelSerializer):
 
     currentPassword = serializers.CharField(required=True)
     newPassword = serializers.CharField(required=True)
+
+
+class ErrorResponseSerializer(serializers.Serializer):
+    detail = serializers.CharField()
+    code = serializers.CharField(allow_null=True)
+    attr = serializers.CharField(allow_null=True)
+

@@ -1,8 +1,8 @@
 from django.urls import path
 
-from profileapp.views import ProfileView, UpdateAvatarView, UpdatePasswordView
+from profile.views import ProfileView, UpdateAvatarView, UpdatePasswordView
 
-app_name = "profileapp"
+app_name = "profile"
 
 urlpatterns = [
     path('profile', ProfileView.as_view(), name='profile'),

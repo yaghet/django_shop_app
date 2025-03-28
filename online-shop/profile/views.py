@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
-from profileapp.models import Profile
-from profileapp.profile_services import (get_profile_or_404, update_avatar,
+from profile.models import Profile
+from profile.profile_services import (get_profile_or_404, update_avatar,
                                          validate_image_func)
-from profileapp.serializers import PasswordSerializer, ProfileSerializer
+from profile.serializers import PasswordSerializer, ProfileSerializer
 
 
 class APIViewWithAuthentication(APIView):

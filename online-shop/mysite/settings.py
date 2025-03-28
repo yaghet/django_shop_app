@@ -13,9 +13,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from os import getenv
 from pathlib import Path
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+if not find_dotenv():
+    exit("Переменные окружения не загружены т.к отсутствует файл .env")
+else:
+    load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,9 +51,12 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "rest_framework",
 
-    # "shopapp.apps.ShopappConfig",
     "authapp.apps.AuthAppConfig",
-    "profileapp.apps.ProfileAppConfig",
+    "profile.apps.ProfileAppConfig",
+    "tags.apps.TagsConfig",
+    "catalog.apps.CatalogConfig",
+    "product.apps.ProductConfig",
+    "basket.apps.BasketConfig",
 ]
 
 MIDDLEWARE = [

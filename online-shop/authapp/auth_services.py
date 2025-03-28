@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from rest_framework.request import Request
 
-from profileapp.models import Profile
+from profile.models import Profile
 
 
 def login_user(request: Request, user):

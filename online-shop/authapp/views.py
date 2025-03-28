@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST,
                                    HTTP_401_UNAUTHORIZED)
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema
 
 from authapp.auth_services import (authenticate_and_login, get_data_from_body,
                                    load_json, logout_user, register_and_login)
@@ -25,6 +26,7 @@ class BaseAuthView(APIView):
             return Response({"Error": str(exp)}, status=self._status_response_400)
 
 
+@extend_schema(tags=["Auth"])
 class LoginView(BaseAuthView):
 
     """ View представления для аутентификации пользователя (войти в приложение) """
@@ -43,10 +45,10 @@ class LoginView(BaseAuthView):
 
             return Response(status=self._status_response_401)
         else:
-            print(serializer.errors)
             return Response({"Error": serializer.errors}, status=self._status_response_401)
 
 
+@extend_schema(tags=["Auth"])
 class RegisterView(BaseAuthView):
 
     """ View представление для регистрации пользователя """
@@ -69,6 +71,7 @@ class RegisterView(BaseAuthView):
             return Response(serializer.errors, status=self._status_response_401)
 
 
+@extend_schema(tags=["Auth"])
 class LogoutView(APIView):
 
     """ View представление для выхода пользователя из приложения """
