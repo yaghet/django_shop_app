@@ -6,24 +6,21 @@ class UserLoginSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = (
-            'username',
-            'password',
+            "username",
+            "password",
         )
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+        extra_kwargs = {"password": {"write_only": True}}
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username',
-            'password',
+            "username",
+            "password",
         )
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+        extra_kwargs = {"password": {"write_only": True}}
+
 
 class LogoutSerializer(serializers.Serializer):
     pass

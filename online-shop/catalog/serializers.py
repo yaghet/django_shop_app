@@ -8,13 +8,13 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubCategory
-        fields = ['id', 'title', 'image']
+        fields = ["id", "title", "image"]
 
     def get_image(self, obj):
         if obj.image:
             return {
-                'src': obj.image.url,
-                'alt': obj.image.name,
+                "src": obj.image.url,
+                "alt": obj.image.name,
             }
         else:
             return None
@@ -27,13 +27,13 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'title', 'subcategories', 'image']
+        fields = ["id", "title", "subcategories", "image"]
 
     def get_image(self, obj):
         if obj.image:
             return {
-                'src': obj.image.url,
-                'alt': obj.image.name,
+                "src": obj.image.url,
+                "alt": obj.image.name,
             }
         else:
             return None

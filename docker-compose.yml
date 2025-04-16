@@ -1,0 +1,43 @@
+services:
+
+  django-app:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    logging:
+      driver: loki
+      options:
+        loki-url: http://host.docker.internal:3100/loki/api/v1/push
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - pgdb
+  pgdb:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    container_name: pgdb
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    ports:
+      - '3000:3000'
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - '3100:3100'
+
+
+volumes:
+  pgdbdata:

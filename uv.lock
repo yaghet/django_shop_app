@@ -231,6 +231,18 @@ wheels = [
 ]
 
 [[package]]
+name = "psycopg"
+version = "3.2.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/67/97/eea08f74f1c6dd2a02ee81b4ebfe5b558beb468ebbd11031adbf58d31be0/psycopg-3.2.6.tar.gz", hash = "sha256:16fa094efa2698f260f2af74f3710f781e4a6f226efe9d1fd0c37f384639ed8a", size = 156322 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d7/7d/0ba52deff71f65df8ec8038adad86ba09368c945424a9bd8145d679a2c6a/psycopg-3.2.6-py3-none-any.whl", hash = "sha256:f3ff5488525890abb0566c429146add66b329e20d6d4835662b920cbbf90ac58", size = 199077 },
+]
+
+[[package]]
 name = "python-django-diploma"
 version = "0.1.0"
 source = { virtual = "." }
@@ -244,6 +256,7 @@ dependencies = [
     { name = "drf-spectacular" },
     { name = "isort" },
     { name = "pillow" },
+    { name = "psycopg" },
     { name = "python-dotenv" },
     { name = "setuptools" },
     { name = "sqlparse" },
@@ -260,6 +273,7 @@ requires-dist = [
     { name = "drf-spectacular", specifier = ">=0.28.0" },
     { name = "isort", specifier = ">=6.0.1" },
     { name = "pillow", specifier = ">=11.1.0" },
+    { name = "psycopg", specifier = ">=3.2.6" },
     { name = "python-dotenv", specifier = "==1.0.1" },
     { name = "setuptools", specifier = ">=77.0.1" },
     { name = "sqlparse", specifier = "==0.5.3" },

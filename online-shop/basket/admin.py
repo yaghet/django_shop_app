@@ -5,9 +5,9 @@ from basket.models import BasketItem, Basket
 
 @admin.register(Basket)
 class BasketAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created_at')
-    list_filter = ('user',)
-    search_fields = ('user',)
+    list_display = ("user", "created_at")
+    list_filter = ("user",)
+    search_fields = ("user",)
 
 
 @admin.register(BasketItem)

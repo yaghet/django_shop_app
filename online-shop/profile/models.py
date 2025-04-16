@@ -4,7 +4,8 @@ from django.db import models
 
 def upload_avatar_profile(instance, filename: str) -> str:
     return "profile/avatar/profile_{id}/{filename}".format(
-        id=instance.user_profile.user.id, filename=filename,
+        id=instance.user_profile.user.id,
+        filename=filename,
     )
 
 
@@ -14,7 +15,11 @@ class Avatar(models.Model):
         verbose_name_plural = "Avatars"
 
     user_profile = models.OneToOneField(
-        "Profile", on_delete=models.CASCADE, null=True, blank=True, related_name="avatar_link"
+        "Profile",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="avatar_link",
     )
     src = models.ImageField(upload_to=upload_avatar_profile)
     alt = models.CharField(max_length=12, default="avatar", verbose_name="Alt Image")
@@ -34,5 +39,5 @@ class Profile(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name="profile_link"
+        related_name="profile_link",
     )

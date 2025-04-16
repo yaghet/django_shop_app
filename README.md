@@ -41,12 +41,17 @@
      ```
      python manage.py migrate
      ```
-3. **Запуск сервера**:
+3. **Загрузка тестовых данных**
+   - Выполните команду в директории online-shop (Не обязательно!)
+     ```
+     python manage.py loaddata --exclude=contenttypes fixtures/fixtures.json
+     ```
+4. **Запуск сервера**:
    - Выполните команду в директории online-shop:
      ```
      python manage.py runserver
      ```
-4. **Открытие в браузере**:
+5. **Открытие в браузере**:
    - Перейдите по адресу: `http://localhost:8000/`
 
 ## Возможности

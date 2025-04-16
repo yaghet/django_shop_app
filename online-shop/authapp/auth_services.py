@@ -1,10 +1,9 @@
 import json
+from profile.models import Profile
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from rest_framework.request import Request
-
-from profile.models import Profile
 
 
 def login_user(request: Request, user):
@@ -48,11 +47,11 @@ def load_json(body):
 
 def get_data_from_body(body):
 
-    username = body['username']
-    password = body['password']
+    username = body["username"]
+    password = body["password"]
 
-    if 'name' in body:
-        full_name = body['name']
+    if "name" in body:
+        full_name = body["name"]
         return username, password, full_name
 
     return username, password

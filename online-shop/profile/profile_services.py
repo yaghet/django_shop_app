@@ -10,31 +10,28 @@ from profile.models import Avatar, Profile
 
 
 def validate_image_func(request: Request) -> Union[str, bool]:
-
-    """ Функция проверяет валидирует входящий файл, загружаемый для обновления аватара пользователя """
+    """Функция проверяет валидирует входящий файл, загружаемый для обновления аватара пользователя"""
 
     avatar = request.FILES["avatar"]
 
     if avatar.size > AVATAR_MAX_SIZE:
-        return 'Avatar file too large.'
+        return "Avatar file too large."
 
     if not avatar.content_type.startswith("image/"):
-        return 'Avatar file type not supported.'
+        return "Avatar file type not supported."
     return True
 
 
 def get_profile_or_404(user: User) -> Profile:
-
-    """ Функция получения профиля пользователя, связанного через User """
+    """Функция получения профиля пользователя, связанного через User"""
 
     return get_object_or_404(Profile, user=user)
 
 
 def update_avatar(profile, request) -> None:
+    """Функция обновляет аватар пользователя. Удаляет старый из медиа и обновляет SRC в БД"""
 
-    """ Функция обновляет аватар пользователя. Удаляет старый из медиа и обновляет SRC в БД """
-
-    avatar = request.FILES['avatar']
+    avatar = request.FILES["avatar"]
 
     if profile.avatar:
         if storage.exists(profile.avatar.src.name):

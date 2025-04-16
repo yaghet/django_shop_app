@@ -46,4 +46,3 @@ class ErrorResponseSerializer(serializers.Serializer):
     detail = serializers.CharField()
     code = serializers.CharField(allow_null=True)
     attr = serializers.CharField(allow_null=True)
-

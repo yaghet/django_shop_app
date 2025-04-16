@@ -12,10 +12,7 @@ class Basket(models.Model):
 class BasketItem(models.Model):
     basket = models.ForeignKey(Basket, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    amount = models.PositiveIntegerField(default=1)
+    amount = models.PositiveIntegerField(default=0)
 
-    def save(self, *args, **kwargs):
-        if self.amount == 0:
-            self.delete()
-        else:
-            super().save(*args, **kwargs)
+    def __str__(self):
+        return self.basket.title
