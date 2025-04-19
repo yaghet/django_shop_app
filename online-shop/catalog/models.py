@@ -1,15 +1,31 @@
 from django.db import models
 
 
-def upload_image_category_path(instance, filename):
+def upload_image_category_path(instance: 'Category', filename: str) -> str:
+    """
+    Функция формирует путь для сохранения изображения для Модели Category
+
+    """
     return f"categories/category_{instance.title}/preview/{filename}"
 
 
-def upload_image_subcategory_path(instance, filename):
+def upload_image_subcategory_path(instance: 'SubCategory', filename: str) -> str:
+    """
+    Функция формирует путь для сохранения изображения для Модели SubCategory
+
+    """
     return f"subcategories/category_{instance.pk}/preview/{filename}"
 
 
 class Category(models.Model):
+    """
+    Модель категории товара.
+
+    Атрибуты:
+    - title: имя категории.
+    - image: изображение категории.
+    """
+
     class Meta:
         verbose_name = "Category"
         verbose_name_plural = "Categories"
@@ -24,6 +40,15 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
+    """
+    Модель подкатегории товара, имеет связь многие ко одной по отношению к модели Category
+
+    Атрибуты:
+    - title: Название категории.
+    - image: изображение подкатегории.
+    - category: связь с моделью Category.
+    """
+
     class Meta:
         verbose_name = "SubCategory"
         verbose_name_plural = "SubCategories"

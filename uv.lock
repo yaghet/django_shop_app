@@ -65,7 +65,7 @@ wheels = [
 name = "diploma-frontend"
 version = "0.6"
 source = { path = "diploma-frontend/dist/diploma-frontend-0.6.tar.gz" }
-sdist = { hash = "sha256:3a6b1203724b256946919b4d65b362b005ae6a9e1e93d8d765e96aa6a92764ac" }
+sdist = { hash = "sha256:d8ffd5df7377a4555e2245e1b1ecfff83a92c3e17fdf61c84a996f63b9f1af9f" }
 
 [[package]]
 name = "django"

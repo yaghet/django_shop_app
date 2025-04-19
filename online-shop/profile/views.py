@@ -3,7 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
-
+from drf_spectacular.utils import extend_schema, OpenApiResponse
 from profile.models import Profile
 from profile.profile_services import (
     get_profile_or_404,
@@ -53,11 +53,23 @@ class APIViewWithAuthentication(APIView):
 class ProfileView(APIViewWithAuthentication):
     """View для обновления данных пользователя"""
 
+    @extend_schema(
+        responses=ProfileSerializer,
+        description="Получение данных профиля текущего пользователя"
+    )
     def get(self, request):
         profile = self.get_profile(request)
         serializer = self.get_profile_serializer(profile).data
         return Response(serializer)
 
+    @extend_schema(
+        request=ProfileSerializer,
+        responses={
+            200: ProfileSerializer,
+            400: OpenApiResponse(description="Ошибка валидации данных")
+        },
+        description="Обновление данных профиля пользователя или аватара"
+    )
     def post(self, request):
 
         profile = self.get_profile(request)
@@ -96,6 +108,14 @@ class UpdatePasswordView(APIViewWithAuthentication):
 
     serializer_class = PasswordSerializer
 
+    @extend_schema(
+        request=None,
+        responses={
+            200: ProfileSerializer,
+            400: OpenApiResponse(description="Ошибка валидации изображения"),
+        },
+        description="Обновление аватара пользователя"
+    )
     def post(self, request: Request) -> Response:
 
         profile = self.get_profile(request)

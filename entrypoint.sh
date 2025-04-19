@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 
+uv run manage.py makemigrations
 uv run manage.py migrate
 uv run manage.py loaddata --exclude=contenttypes fixtures/fixtures.json
 

@@ -1,7 +1,8 @@
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
 
 from order.models import Order, OrderProduct
 from order.serializers import OrderSerializer
@@ -10,7 +11,45 @@ from product.models import Product
 
 
 class OrdersCreateView(APIView):
+    """
+    APIView для создания и отображения заказов текущего пользователя.
 
+    Методы:
+        get(request, id): Возвращает данные заказа с помощью получения профиля пользователя по его id.
+        post(request): Создание нового заказа с выбранными пользователем продуктами из корзины.
+    """
+    @extend_schema(
+        tags=['Orders'],
+        responses=OrderSerializer(many=True),
+        description="Получение списка заказов текущего пользователя"
+    )
+    def get(self, request: Request):
+        orders = Order.objects.filter(user_id=request.user.profile.pk)
+        serialized = OrderSerializer(orders, many=True)
+        return Response(serialized.data)
+
+    @extend_schema(
+        tags=['Orders'],
+        request=inline_serializer(
+            name='OrderCreateRequest',
+            many=True,
+            fields={
+                'id': serializers.IntegerField(),
+                'count': serializers.IntegerField(),
+                'price': serializers.FloatField(),
+            }
+        ),
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "orderId": {"type": "integer", "description": "ID созданного заказа"},
+                },
+            },
+            400: OpenApiResponse(description="Ошибка в данных запроса"),
+        },
+        description="Создание нового заказа с продуктами"
+    )
     def post(self, request: Request, *args, **kwargs):
         products_in_order = [
             (obj["id"], obj["count"], obj["price"]) for obj in request.data
@@ -35,13 +74,20 @@ class OrdersCreateView(APIView):
         }
         return Response(data)
 
-    def get(self, request: Request):
-        orders = Order.objects.filter(user_id=request.user.profile.pk)
-        serialized = OrderSerializer(orders, many=True)
-        return Response(serialized.data)
-
 
 class OrderDetailView(APIView):
+    """
+    APIView для получения детальной информации о конкретном заказае по его id
+
+    Методы:
+        - get(request, id): Отображение информации о заказе по его id
+        - post(request, id): Обновление данных о заказа по его id
+    """
+    @extend_schema(
+        tags=['Orders'],
+        responses=OrderSerializer,
+        description="Получение детальной информации о заказе по ID"
+    )
     def get(self, request, id):
         order = Order.objects.get(pk=id)
         serialized = OrderSerializer(order)
@@ -57,6 +103,30 @@ class OrderDetailView(APIView):
 
         return Response(data)
 
+    @extend_schema(
+        tags=['Orders'],
+        request=inline_serializer(
+            name='OrderUpdateRequest',
+            fields={
+                'deliveryType': serializers.CharField(),
+                'city': serializers.CharField(),
+                'address': serializers.CharField(),
+                'paymentType': serializers.CharField(),
+                'products': serializers.ListField(
+                    child=serializers.DictField()
+                ),
+            }
+        ),
+        responses={
+            201: OpenApiResponse(
+                response={"type": "object", "properties": {}},
+                description="Заказ успешно обновлен"
+            ),
+            400: OpenApiResponse(description="Ошибка в данных запроса"),
+            404: OpenApiResponse(description="Заказ не найден"),
+        },
+        description="Обновление информации о заказе"
+    )
     def post(self, request: Request, id):
         order = Order.objects.get(pk=id)
 
@@ -85,6 +155,52 @@ class OrderDetailView(APIView):
 
 
 class PaymentView(APIView):
+
+    @extend_schema(tags=['Payment'],
+                   request=inline_serializer(
+                       name='PaymentRequest',
+                       fields={
+                           'number': serializers.CharField(
+                               max_length=19,
+                               help_text='Номер банковской карты'
+                           ),
+                           'month': serializers.IntegerField(
+                               min_value=1,
+                               max_value=12,
+                               help_text='Месяц окончания срока действия карты'
+                           ),
+                           'year': serializers.IntegerField(
+                               min_value=2000,
+                               max_value=2100,
+                               help_text='Год окончания срока действия карты'
+                           ),
+                       }
+                   ),
+                   responses={
+                       200: OpenApiResponse(
+                           response=inline_serializer(
+                               name='PaymentSuccessResponse',
+                               fields={'message': serializers.CharField(default='Платеж успешно обработан')}
+                           ),
+                           description='Платеж успешно обработан'
+                       ),
+                       400: OpenApiResponse(
+                           response=inline_serializer(
+                               name='PaymentErrorResponse',
+                               fields={'error': serializers.CharField(default='Ошибка валидации платежных данных')}
+                           ),
+                           description='Ошибка валидации платежных данных'
+                       ),
+                       402: OpenApiResponse(
+                           response=inline_serializer(
+                               name='PaymentDeclinedResponse',
+                               fields={'error': serializers.CharField(default='Платеж отклонён')}
+                           ),
+                           description='Платеж отклонён'
+                       ),
+                   },
+                   description='Обработка платежа по заказу'
+                   )
     def post(self, request, id):
         data = request.data
 

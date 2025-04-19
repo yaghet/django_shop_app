@@ -1,8 +1,9 @@
 from django.db.models import Count, Q
-from rest_framework import status
-from rest_framework.generics import GenericAPIView
+from rest_framework import status, serializers
+from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
 
 from catalog.models import Category
 from catalog.serializers import CategorySerializer
@@ -11,6 +12,19 @@ from product.serializers import ProductSerializer, SalesProductSerializer
 
 
 class SalesView(GenericAPIView):
+
+    @extend_schema(
+        tags=['Catalog'],
+        responses=inline_serializer(
+            name='SalesResponse',
+            fields={
+                'items': SalesProductSerializer(many=True),
+                'currentPage': serializers.IntegerField(),
+                'lastPage': serializers.IntegerField(),
+            }
+        ),
+        description="Получение списка товаров со скидками"
+    )
     def get(self, request) -> Response:
         sales = SalePrice.objects.all()
         serializer = SalesProductSerializer(
@@ -26,6 +40,14 @@ class SalesView(GenericAPIView):
 
 
 class CategoryListView(GenericAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+    @extend_schema(
+        tags=['Catalog'],
+        responses=CategorySerializer(many=True),
+        description="Получение всех категорий продуктов",
+    )
     def get(self, request):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
@@ -33,6 +55,19 @@ class CategoryListView(GenericAPIView):
 
 
 class CatalogListAPIView(APIView):
+
+    @extend_schema(
+        tags=['Catalog'],
+        responses=inline_serializer(
+            name='CatalogResponse',
+            fields={
+                'items': ProductSerializer(many=True),
+                'currentPage': serializers.IntegerField(),
+                'lastPage': serializers.IntegerField(),
+            }
+        ),
+        description="Получение списка продуктов с фильтрацией и сортировкой"
+    )
     def get(self, request) -> Response:
         name = request.query_params.get("filter[name]") or None
         if request.query_params.get("filter[available]") == "true":
@@ -62,8 +97,7 @@ class CatalogListAPIView(APIView):
                 if name is None:
                     name = category[8:]
             else:
-
-                products_list = products_list.filter(Q(subcategory_id__in=category))
+                products_list = products_list.filter(Q(category_id__in=category))
 
         if name:
             products_list = products_list.filter(
@@ -103,6 +137,15 @@ class CatalogListAPIView(APIView):
 
 
 class LimitedProductsView(GenericAPIView):
+
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+
+    @extend_schema(
+        tags=['Catalog'],
+        responses=ProductSerializer(many=True),
+        description="Получение списка ограниченных продуктов (лимитированных)"
+    )
     def get(self, request) -> Response:
         products = Product.objects.filter(is_limited=True)[:8]
         serializer = ProductSerializer(products, many=True)
@@ -110,14 +153,33 @@ class LimitedProductsView(GenericAPIView):
 
 
 class PopularProductsView(GenericAPIView):
+
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+
+    @extend_schema(
+        tags=['Catalog'],
+        responses=ProductSerializer(many=True),
+        description="Получение списка популярных продуктов по рейтингу"
+    )
     def get(self, request) -> Response:
         products = Product.objects.order_by("rating")[:10]
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class BannerListView(GenericAPIView):
-    def get(self, request) -> Response:
-        products = Product.objects.filter(is_banner=True)[:3]
-        serializer = ProductSerializer(products, many=True)
+class BannerListView(ListAPIView):
+    serializer_class = ProductSerializer
+
+    @extend_schema(
+        tags=['Catalog'],
+        responses=ProductSerializer(many=True),
+        description="Получение списка продуктов для баннера"
+    )
+    def get_queryset(self):
+        return Product.objects.filter(is_banner=True)[:3]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

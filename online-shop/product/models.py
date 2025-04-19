@@ -1,5 +1,6 @@
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from decimal import Decimal
 
 from catalog.models import Category, SubCategory
 from tags.models import Tag
@@ -10,6 +11,8 @@ def upload_product_preview(instance, filename):
 
 
 class ProductImages(models.Model):
+    """ Модель изображения продукта, имеет связь `ManyToMany` с моделью Product """
+
     class Meta:
         verbose_name = "ProductImages"
 
@@ -23,6 +26,7 @@ class ProductImages(models.Model):
 
 
 class Review(models.Model):
+    """ Модель отзыва о товаре """
     class Meta:
         verbose_name = "Review"
         verbose_name_plural = "Reviews"
@@ -37,11 +41,18 @@ class Review(models.Model):
 
 
 class Product(models.Model):
+    """ Модель продукта (товара) связан с OrderProduct, Category, SubCategory, Specification, Tags"""
+
+    class Meta:
+        ordering = ['id']
+
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=50)
     fullDescription = models.TextField(max_length=250)
-    price = models.DecimalField(decimal_places=2, max_digits=8)
-    count = models.IntegerField(default=0)
+    price = models.DecimalField(
+        decimal_places=2, max_digits=8, validators=[MinValueValidator(Decimal('1'))]
+    )
+    count = models.PositiveIntegerField(default=0)
     date = models.DateTimeField(auto_now_add=True)
     freeDelivery = models.BooleanField(default=False)
 
@@ -55,13 +66,15 @@ class Product(models.Model):
     rating = models.DecimalField(
         decimal_places=1,
         max_digits=2,
-        default=0,
+        default='0',
+        validators=[MinValueValidator(Decimal('0')), MaxValueValidator(Decimal('5'))],
     )
 
     is_limited = models.BooleanField(default=False)
     is_banner = models.BooleanField(default=False)
 
     def get_average_rating(self):
+        """ Функция расчитывает средний рейтинг для модели """
         reviews = Review.objects.filter(product=self).values_list("rate", flat=True)
         if reviews:
             return sum(reviews) / len(reviews)
@@ -73,6 +86,7 @@ class Product(models.Model):
 
 
 class Specification(models.Model):
+    """ Модель спецификации продукта (товара), связана с Product `ManyToMany` """
     class Meta:
         verbose_name = "Specification"
         verbose_name_plural = "Specifications"
@@ -85,6 +99,7 @@ class Specification(models.Model):
 
 
 class SalePrice(models.Model):
+    """ Модель для продуктов со скидкой """
     class Meta:
         verbose_name = "SalePrice"
         verbose_name_plural = "SalePrices"

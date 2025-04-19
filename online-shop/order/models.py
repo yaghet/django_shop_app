@@ -6,6 +6,7 @@ from product.models import Product
 
 
 class Order(models.Model):
+    """ Модель заказа продуктов. """
 
     class Meta:
         verbose_name = "Order"
@@ -16,7 +17,7 @@ class Order(models.Model):
     deliveryType = models.CharField(max_length=30, default="free")
     paymentType = models.CharField(max_length=30, default="online")
     totalCost = models.DecimalField(decimal_places=2, max_digits=8, default=0)
-    status = models.CharField(max_length=10, default="accepted")
+    status = models.CharField(max_length=30, default="accepted")
     city = models.CharField(max_length=100)
     address = models.TextField(max_length=256)
     products = models.ManyToManyField(Product, related_name="orders")
@@ -26,6 +27,7 @@ class Order(models.Model):
 
 
 class OrderProduct(models.Model):
+    """ Модель для связи между заказом и товаром с указанием количества """
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
@@ -33,6 +35,16 @@ class OrderProduct(models.Model):
 
 
 class Payment(models.Model):
+    """
+    Модель оплаты заказа.
+
+    Атрибуты:
+    - order: заказ, к которому относится оплата.
+    - card_number: номер карты оплаты.
+    - valid_period: срок действия карты.
+    - success: статус успешности оплаты.
+
+    """
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     card_number = models.CharField(max_length=16)
     valid_period = models.CharField(max_length=15)

@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-def upload_avatar_profile(instance, filename: str) -> str:
+def upload_avatar_profile(instance: 'Avatar', filename: str) -> str:
+    """ Функция формирует путь для загрузки изображения к профилю пользователя """
     return "profile/avatar/profile_{id}/{filename}".format(
         id=instance.user_profile.user.id,
         filename=filename,
@@ -10,6 +11,7 @@ def upload_avatar_profile(instance, filename: str) -> str:
 
 
 class Avatar(models.Model):
+    """ Модель изображения профиля пользователя, имеет связь `OneToOne` с профилем пользователя """
     class Meta:
         verbose_name = "Avatar"
         verbose_name_plural = "Avatars"
@@ -26,6 +28,7 @@ class Avatar(models.Model):
 
 
 class Profile(models.Model):
+    """ Модель профиля пользователя, имеет связь `OneToOne` с User, и `OneToOne` c Avatar """
     class Meta:
         verbose_name = "Profile"
         verbose_name_plural = "Profiles"

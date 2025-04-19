@@ -9,6 +9,7 @@ from authapp.auth_services import (authenticate_and_login, get_data_from_body,
                                    load_json, logout_user, register_and_login)
 from authapp.serializers import (LogoutSerializer, UserLoginSerializer,
                                  UserRegistrationSerializer)
+from rest_framework.permissions import AllowAny
 
 
 class BaseAuthView(APIView):
@@ -29,6 +30,7 @@ class BaseAuthView(APIView):
 class LoginView(BaseAuthView):
     """View представления для аутентификации пользователя (войти в приложение)"""
 
+    permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
 
     def post(self, request: Request):
@@ -52,6 +54,7 @@ class LoginView(BaseAuthView):
 class RegisterView(BaseAuthView):
     """View представление для регистрации пользователя"""
 
+    permission_classes = [AllowAny]
     serializer_class = UserRegistrationSerializer
 
     def post(self, request: Request):

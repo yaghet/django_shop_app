@@ -1,0 +1,1171 @@
+openapi: 3.0.3
+info:
+  title: My Online Store
+  version: 0.0.1
+  description: 'Online Store '
+paths:
+  /api/banners/:
+    get:
+      operationId: banners_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - banners
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductList'
+          description: ''
+  /api/basket:
+    get:
+      operationId: basket_list
+      description: Получение всех товаров в корзине текущего пользователя
+      tags:
+      - Basket
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasketItem'
+          description: ''
+        '401':
+          description: Пользователь не аутентифицирован
+        '404':
+          description: Товары в корзине не найдены
+    post:
+      operationId: basket_create
+      description: Добавление товара в корзину или увеличение количества
+      tags:
+      - Basket
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BasketItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BasketItem'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasketItem'
+          description: ''
+    delete:
+      operationId: basket_destroy
+      description: Удаление или уменьшение количества товара в корзине
+      tags:
+      - Basket
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BasketItem'
+          description: ''
+        '400':
+          description: Ошибка валидации данных
+        '404':
+          description: Корзина или товар не найдены
+        '500':
+          description: Внутренняя ошибка сервера
+  /api/catalog/:
+    get:
+      operationId: catalog_retrieve
+      description: Получение списка продуктов с фильтрацией и сортировкой
+      tags:
+      - Catalog
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogResponse'
+          description: ''
+  /api/categories:
+    get:
+      operationId: categories_list
+      description: Получение всех категорий продуктов
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Catalog
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+          description: ''
+  /api/order/{id}:
+    get:
+      operationId: order_retrieve
+      description: Получение детальной информации о заказе по ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Orders
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    post:
+      operationId: order_create
+      description: Обновление информации о заказе
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          description: Заказ успешно обновлен
+        '400':
+          description: Ошибка в данных запроса
+        '404':
+          description: Заказ не найден
+  /api/orders:
+    get:
+      operationId: orders_list
+      description: Получение списка заказов текущего пользователя
+      tags:
+      - Orders
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+          description: ''
+    post:
+      operationId: orders_create
+      description: Создание нового заказа с продуктами
+      tags:
+      - Orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderCreateRequest'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                    description: ID созданного заказа
+          description: ''
+        '400':
+          description: Ошибка в данных запроса
+  /api/payment/{id}:
+    post:
+      operationId: payment_create
+      description: Обработка платежа по заказу
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentSuccessResponse'
+          description: Платеж успешно обработан
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentErrorResponse'
+          description: Ошибка валидации платежных данных
+        '402':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentDeclinedResponse'
+          description: Платеж отклонён
+  /api/product/{id}/:
+    get:
+      operationId: product_retrieve
+      description: Получить детальную информацию о продукте по ID.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Product
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+  /api/product/{id}/reviews:
+    post:
+      operationId: product_reviews_create
+      description: Создать новый отзыв для продукта по ID.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Review'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Review'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+          description: ''
+        '400':
+          description: Ошибка валидации данных
+        '500':
+          description: Внутренняя ошибка сервера
+  /api/products/limited/:
+    get:
+      operationId: products_limited_list
+      description: Получение списка ограниченных продуктов (лимитированных)
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Catalog
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductList'
+          description: ''
+  /api/products/popular/:
+    get:
+      operationId: products_popular_list
+      description: Получение списка популярных продуктов по рейтингу
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Catalog
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductList'
+          description: ''
+  /api/profile:
+    get:
+      operationId: profile_retrieve
+      description: Получение данных профиля текущего пользователя
+      tags:
+      - profile
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+    post:
+      operationId: profile_create
+      description: Обновление данных профиля пользователя или аватара
+      tags:
+      - profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Profile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+        '400':
+          description: Ошибка валидации данных
+  /api/profile/avatar:
+    post:
+      operationId: profile_avatar_create
+      description: View для обновления аватара пользователя
+      tags:
+      - profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Profile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+  /api/profile/password:
+    post:
+      operationId: profile_password_create
+      description: Обновление аватара пользователя
+      tags:
+      - profile
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+        '400':
+          description: Ошибка валидации изображения
+  /api/sales/:
+    get:
+      operationId: sales_retrieve
+      description: Получение списка товаров со скидками
+      tags:
+      - Catalog
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesResponse'
+          description: ''
+  /api/sign-in/:
+    post:
+      operationId: sign_in_create
+      description: View представления для аутентификации пользователя (войти в приложение)
+      tags:
+      - Auth
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/sign-out/:
+    post:
+      operationId: sign_out_create
+      description: View представление для выхода пользователя из приложения
+      tags:
+      - Auth
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/sign-up/:
+    post:
+      operationId: sign_up_create
+      description: View представление для регистрации пользователя
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistration'
+          description: ''
+  /api/tags/:
+    get:
+      operationId: tags_retrieve
+      description: Список тегов для продукта (товаров)
+      tags:
+      - tags
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+          description: ''
+components:
+  schemas:
+    Avatar:
+      type: object
+      description: |-
+        Сериализатор для модели Avatar.
+
+        Поля:
+        - src: ссылка на изображение аватара.
+        - alt: альтернативный текст для изображения.
+      properties:
+        src:
+          type: string
+          format: uri
+        alt:
+          type: string
+          title: Alt Image
+          maxLength: 12
+      required:
+      - src
+    BasketItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product:
+          type: integer
+        amount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - id
+      - product
+    CatalogResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        currentPage:
+          type: integer
+        lastPage:
+          type: integer
+      required:
+      - currentPage
+      - items
+      - lastPage
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        subcategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubCategory'
+          readOnly: true
+        image:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+          readOnly: true
+      required:
+      - id
+      - image
+      - subcategories
+      - title
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        fullName:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        deliveryType:
+          type: string
+          maxLength: 30
+        paymentType:
+          type: string
+          maxLength: 30
+        totalCost:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+        status:
+          type: string
+          maxLength: 30
+        city:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+          maxLength: 256
+        user:
+          type: integer
+      required:
+      - address
+      - city
+      - createdAt
+      - email
+      - fullName
+      - id
+      - phone
+      - products
+      - user
+    OrderCreateRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        count:
+          type: integer
+        price:
+          type: number
+          format: double
+      required:
+      - count
+      - id
+      - price
+    OrderUpdateRequest:
+      type: object
+      properties:
+        deliveryType:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        paymentType:
+          type: string
+        products:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - address
+      - city
+      - deliveryType
+      - paymentType
+      - products
+    PaginatedCategoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    PaginatedProductList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    PaymentDeclinedResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          default: Платеж отклонён
+    PaymentErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          default: Ошибка валидации платежных данных
+    PaymentRequest:
+      type: object
+      properties:
+        number:
+          type: string
+          description: Номер банковской карты
+          maxLength: 19
+        month:
+          type: integer
+          maximum: 12
+          minimum: 1
+          description: Месяц окончания срока действия карты
+        year:
+          type: integer
+          maximum: 2100
+          minimum: 2000
+          description: Год окончания срока действия карты
+      required:
+      - month
+      - number
+      - year
+    PaymentSuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          default: Платеж успешно обработан
+    Product:
+      type: object
+      description: |-
+        Сериализатор для модели Product с вложенными сериализаторами для тегов, отзывов,
+        спецификаций и изображений.
+
+        Поля:
+            id (int): Идентификатор продукта.
+            category (Category): Категория продукта.
+            price (float): Цена продукта.
+            count (int): Количество на складе.
+            date (datetime): Дата создания/обновления.
+            title (str): Название продукта.
+            description (str): Краткое описание.
+            fullDescription (str): Полное описание.
+            freeDelivery (bool): Бесплатная доставка.
+            images (list): Список изображений с обработкой по умолчанию.
+            tags (list): Список тегов.
+            reviews (list): Список отзывов.
+            specifications (list): Список спецификаций.
+            rating (float): Рейтинг продукта.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        category:
+          type: integer
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+        count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 30
+        description:
+          type: string
+          maxLength: 50
+        fullDescription:
+          type: string
+          maxLength: 250
+        freeDelivery:
+          type: boolean
+        images:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+          readOnly: true
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+          readOnly: true
+        specifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Specification'
+          readOnly: true
+        rating:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,1})?$
+      required:
+      - category
+      - date
+      - description
+      - fullDescription
+      - id
+      - images
+      - price
+      - reviews
+      - specifications
+      - tags
+      - title
+    Profile:
+      type: object
+      description: |-
+        Сериализатор для модели Profile
+        Содержит методы для валидации номера телефона и имени профиля пользователя
+        (с использованием встроенной библиотеки `re`)
+
+        Поля:
+        - fullName: полное имя пользователя.
+        - email: адрес электронной почты (необязательное).
+        - phone: номер телефона (необязательное).
+        - avatar: аватар пользователя (вложенный сериализатор).
+      properties:
+        fullName:
+          type: string
+          nullable: true
+          maxLength: 128
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        avatar:
+          allOf:
+          - $ref: '#/components/schemas/Avatar'
+          readOnly: true
+      required:
+      - avatar
+    Review:
+      type: object
+      description: |-
+        Сериализатор для модели Review.
+
+        Поля:
+            Все поля модели Review.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        author:
+          type: string
+          title: Автор
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        text:
+          type: string
+          maxLength: 250
+        rate:
+          type: integer
+          maximum: 5
+          minimum: 0
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - date
+      - id
+      - text
+    SalesProduct:
+      type: object
+      description: |-
+        Сериализатор для модели SalePrice с дополнительными полями из связанного продукта.
+
+        Поля:
+            id (int): Идентификатор акции.
+            price (float): Цена продукта.
+            salePrice (float): Цена со скидкой.
+            dateFrom (datetime): Дата начала акции.
+            dateTo (datetime): Дата окончания акции.
+            title (str): Название продукта (из связанной модели Product).
+            images (list): Список изображений продукта с обработкой по умолчанию.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        price:
+          type: number
+          format: double
+        salePrice:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+        dateFrom:
+          type: string
+          format: date
+        dateTo:
+          type: string
+          format: date
+        title:
+          type: string
+        images:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+      required:
+      - dateFrom
+      - dateTo
+      - id
+      - images
+      - price
+      - salePrice
+      - title
+    SalesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SalesProduct'
+        currentPage:
+          type: integer
+        lastPage:
+          type: integer
+      required:
+      - currentPage
+      - items
+      - lastPage
+    Specification:
+      type: object
+      description: |-
+        Сериализатор для модели Specification.
+
+        Поля:
+            id (int): Идентификатор спецификации.
+            name (str): Название спецификации.
+            value (str): Значение спецификации.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 30
+        value:
+          type: string
+          maxLength: 30
+      required:
+      - id
+      - name
+      - value
+    SubCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        image:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+          readOnly: true
+      required:
+      - id
+      - image
+      - title
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 30
+      required:
+      - id
+      - name
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+      required:
+      - password
+      - username
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

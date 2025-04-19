@@ -1,4 +1,7 @@
+from typing import Optional
+
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 
 from catalog.models import Category, SubCategory
 
@@ -10,7 +13,8 @@ class SubCategorySerializer(serializers.ModelSerializer):
         model = SubCategory
         fields = ["id", "title", "image"]
 
-    def get_image(self, obj):
+    @extend_schema_field(serializers.DictField(child=serializers.CharField(), allow_null=True))
+    def get_image(self, obj) -> Optional[dict[str, str]]:
         if obj.image:
             return {
                 "src": obj.image.url,
@@ -29,7 +33,8 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ["id", "title", "subcategories", "image"]
 
-    def get_image(self, obj):
+    @extend_schema_field(serializers.DictField(child=serializers.CharField(), allow_null=True))
+    def get_image(self, obj) -> Optional[dict[str, str]]:
         if obj.image:
             return {
                 "src": obj.image.url,
