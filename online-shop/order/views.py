@@ -1,16 +1,19 @@
-from rest_framework import status, serializers
+from drf_spectacular.utils import (OpenApiResponse, extend_schema,
+                                   inline_serializer)
+from rest_framework import serializers, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
 
 from order.models import Order, OrderProduct
 from order.serializers import OrderSerializer
-from order.services import PaymentService, check_card_number, check_year_and_month
+from order.services import (PaymentService, check_card_number,
+                            check_year_and_month)
 from product.models import Product
 
 
 class OrdersCreateView(APIView):
+
     """
     APIView для создания и отображения заказов текущего пользователя.
 
@@ -18,6 +21,7 @@ class OrdersCreateView(APIView):
         get(request, id): Возвращает данные заказа с помощью получения профиля пользователя по его id.
         post(request): Создание нового заказа с выбранными пользователем продуктами из корзины.
     """
+
     @extend_schema(
         tags=['Orders'],
         responses=OrderSerializer(many=True),
@@ -140,8 +144,8 @@ class OrderDetailView(APIView):
         if data["deliveryType"] == "express":
             order.totalCost += 500
         else:
-            if order.totalCost < 1500:
-                order.totalCost += 500
+            if order.totalCost < 2000:
+                order.totalCost += 200
 
         for product in data["products"]:
             OrderProduct.objects.get_or_create(
@@ -208,16 +212,16 @@ class PaymentView(APIView):
         month = data.get("month")
         year = data.get("year")
 
-        if not all([card, month, year]):
+        if not all([month, year]):
             return Response(
                 {"error": "Missing payment information"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if not check_card_number(card):
-            return Response(
-                {"error": "Invalid card number"}, status=status.HTTP_400_BAD_REQUEST
-            )
+        # if not check_card_number(card):
+        #     return Response(
+        #         {"error": "Invalid card number"}, status=status.HTTP_400_BAD_REQUEST
+        #     )
 
         if not check_year_and_month(int(year), int(month)):
             return Response(

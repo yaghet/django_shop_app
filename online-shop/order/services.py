@@ -64,6 +64,6 @@ def check_year_and_month(year, month):
 
 
 def check_card_number(card_number):
-    if not 12 <= len(card_number) <= 16:
+    if not 12 <= len(card_number.replace(' ', '')) <= 16:
         return False
     return True

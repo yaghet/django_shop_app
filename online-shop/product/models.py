@@ -1,6 +1,7 @@
+from decimal import Decimal
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from decimal import Decimal
 
 from catalog.models import Category, SubCategory
 from tags.models import Tag

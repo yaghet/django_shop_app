@@ -1,9 +1,11 @@
 from django.db.models import Count, Q
-from rest_framework import status, serializers
+from drf_spectacular.utils import (OpenApiResponse, extend_schema,
+                                   inline_serializer)
+from rest_framework import serializers, status
 from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
+from rest_framework.permissions import AllowAny
 
 from catalog.models import Category
 from catalog.serializers import CategorySerializer
@@ -12,6 +14,7 @@ from product.serializers import ProductSerializer, SalesProductSerializer
 
 
 class SalesView(GenericAPIView):
+    permission_classes = (AllowAny,)
 
     @extend_schema(
         tags=['Catalog'],
@@ -40,6 +43,7 @@ class SalesView(GenericAPIView):
 
 
 class CategoryListView(GenericAPIView):
+    permission_classes = (AllowAny,)
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
 
@@ -55,6 +59,7 @@ class CategoryListView(GenericAPIView):
 
 
 class CatalogListAPIView(APIView):
+    permission_classes = (AllowAny,)
 
     @extend_schema(
         tags=['Catalog'],
@@ -137,6 +142,7 @@ class CatalogListAPIView(APIView):
 
 
 class LimitedProductsView(GenericAPIView):
+    permission_classes = (AllowAny,)
 
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
@@ -153,7 +159,7 @@ class LimitedProductsView(GenericAPIView):
 
 
 class PopularProductsView(GenericAPIView):
-
+    permission_classes = (AllowAny,)
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
 
@@ -170,6 +176,7 @@ class PopularProductsView(GenericAPIView):
 
 class BannerListView(ListAPIView):
     serializer_class = ProductSerializer
+    permission_classes = (AllowAny,)
 
     @extend_schema(
         tags=['Catalog'],

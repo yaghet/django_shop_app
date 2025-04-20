@@ -1,9 +1,8 @@
 import re
+from profile.models import Avatar, Profile
 
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
-from profile.models import Avatar, Profile
 
 
 class AvatarSerializer(serializers.ModelSerializer):

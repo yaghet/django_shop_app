@@ -13,3 +13,11 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
+
+
+class OrderUpdateSerializer(serializers.Serializer):
+    deliveryType = serializers.ChoiceField(choices=["express", "standard"])
+    city = serializers.CharField(max_length=100)
+    address = serializers.CharField(max_length=255)
+    paymentType = serializers.CharField(max_length=50)
+    products = ProductSerializer(many=True)

@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from basket.models import BasketItem
 from product.serializers import ProductSerializer
 

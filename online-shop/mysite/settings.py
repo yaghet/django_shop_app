@@ -14,7 +14,7 @@ import os
 from os import getenv
 from pathlib import Path
 
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 if not find_dotenv():
     exit("Переменные окружения не загружены т.к отсутствует файл .env")
@@ -38,7 +38,6 @@ ALLOWED_HOSTS = [
     '0.0.0.0',
 ]
 INTERNAL_IPS = ['127.0.0.1']
-
 
 # Application definition
 
@@ -101,24 +100,24 @@ DATABASE_DIR = BASE_DIR / "database"
 DATABASE_DIR.mkdir(exist_ok=True)
 
 """ Расскоментировать, чтобы использовать sqlite3 для проекта (не забудьте закомментировать DATABASE ниже) """
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": DATABASE_DIR / "online_shop_database",
-#     }
-# }
-
-""" Закомментировать, если собираетесь запустить проект без использования POSTGRES"""
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': 'pgdb',
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": DATABASE_DIR / "online_shop_database",
     }
 }
+
+""" Закомментировать, если собираетесь запустить проект без использования POSTGRES"""
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('POSTGRES_DB'),
+#         'USER': os.environ.get('POSTGRES_USER'),
+#         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+#         'HOST': 'pgdb',
+#         'PORT': '5432',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -160,6 +159,9 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
     ],
 }
 

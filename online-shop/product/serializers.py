@@ -1,8 +1,9 @@
 from django.conf import settings
-from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
-from catalog.serializers import CategorySerializer
-from product.models import Product, ProductImages, Review, SalePrice, Specification
+from rest_framework import serializers
+
+from product.models import (Product, ProductImages, Review, SalePrice,
+                            Specification)
 from tags.serializers import TagSerializer
 
 
@@ -98,11 +99,13 @@ class ProductSerializer(ImagesWithDefaultMixin, serializers.ModelSerializer):
         specifications (list): Список спецификаций.
         rating (float): Рейтинг продукта.
     """
-
+    id = serializers.IntegerField()
     tags = TagSerializer(many=True, read_only=True)
     reviews = ReviewSerializer(many=True, read_only=True)
     specifications = SpecificationSerializer(many=True, read_only=True)
     images = serializers.SerializerMethodField()
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    rating = serializers.DecimalField(max_digits=3, decimal_places=1)
 
     class Meta:
         model = Product

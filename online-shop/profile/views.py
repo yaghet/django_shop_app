@@ -1,16 +1,14 @@
+from profile.models import Profile
+from profile.profile_services import (get_profile_or_404, update_avatar,
+                                      validate_image_func)
+from profile.serializers import PasswordSerializer, ProfileSerializer
+
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema, OpenApiResponse
-from profile.models import Profile
-from profile.profile_services import (
-    get_profile_or_404,
-    update_avatar,
-    validate_image_func,
-)
-from profile.serializers import PasswordSerializer, ProfileSerializer
 
 
 class APIViewWithAuthentication(APIView):

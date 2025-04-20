@@ -1,14 +1,16 @@
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from product.models import Product
 from product.serializers import ProductSerializer, ReviewSerializer
 
 
 class ProductDetailView(APIView):
+    permission_classes = (AllowAny,)
     """
     APIView для получения детальной информации о продукте по его ID.
 
@@ -40,6 +42,7 @@ class ProductDetailView(APIView):
 
 
 class ProductReviewView(APIView):
+    permission_classes = (AllowAny,)
     """
     APIView для создания нового отзыва о продукте, по его id.
     Методы:
