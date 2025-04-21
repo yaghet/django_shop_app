@@ -51,19 +51,23 @@ class PaymentService:
 
 
 def check_year_and_month(year, month):
+
+    """ Функция проверяет валидность даты карты, введённой пользователем """
+
     if month < 1 or month > 12:
         return False
 
-    cur_year = datetime.now().year % 25
+    cur_year = datetime.now().year % 100
     cur_month = datetime.now().month
 
-    if not all([cur_month < month, cur_year < year]):
+    if not all([cur_month <= month, cur_year <= year]):
         return False
 
     return True
 
 
 def check_card_number(card_number):
+    """ Функция проверки длинны номера карты, введённого пользователем """
     if not 12 <= len(card_number.replace(' ', '')) <= 16:
         return False
     return True

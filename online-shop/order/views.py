@@ -6,14 +6,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from order.models import Order, OrderProduct
-from order.serializers import OrderSerializer
-from order.services import (PaymentService, check_card_number,
+from order.serializers import OrderSerializer, OrderUpdateSerializer
+from order.services import (PaymentService,
                             check_year_and_month)
 from product.models import Product
 
 
 class OrdersCreateView(APIView):
-
     """
     APIView для создания и отображения заказов текущего пользователя.
 
@@ -132,9 +131,16 @@ class OrderDetailView(APIView):
         description="Обновление информации о заказе"
     )
     def post(self, request: Request, id):
+
+        serializer = OrderUpdateSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         order = Order.objects.get(pk=id)
 
         data = request.data
+
         order.delivery_type = data["deliveryType"]
         order.city = data["city"]
         order.address = data["address"]
@@ -211,8 +217,9 @@ class PaymentView(APIView):
         card = data.get("number")
         month = data.get("month")
         year = data.get("year")
+        code = data.get("code")
 
-        if not all([month, year]):
+        if not all([month, year]) or not 0 < int(code) < 999:
             return Response(
                 {"error": "Missing payment information"},
                 status=status.HTTP_400_BAD_REQUEST,

@@ -160,9 +160,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    'DEFAULT_PARSER_CLASSES': [
+    'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
-    ],
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ),
 }
 
 SPECTACULAR_SETTINGS = {
@@ -188,23 +190,27 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 DJANGO_LEVEL_LOGGING = getenv('DJANGO_LEVEL_LOGGING')
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    'formatters': {
-        'verbose': {
-            'format': "[%(asctime)s] %(levelname)s [%(name)s] %(message)s",
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'skip_static_requests': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: not record.getMessage().startswith('GET /static/frontend/assets'),
         },
     },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'filters': ['skip_static_requests'],
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': DJANGO_LEVEL_LOGGING,
-    }
+    'loggers': {
+        'django.server': {
+            'handlers': ['console'],
+            'level': DJANGO_LEVEL_LOGGING,
+            'propagate': False,
+        },
+    },
 }
 
 CART_SESSION_ID = 'cart'

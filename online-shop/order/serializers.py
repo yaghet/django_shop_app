@@ -16,8 +16,15 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderUpdateSerializer(serializers.Serializer):
-    deliveryType = serializers.ChoiceField(choices=["express", "standard"])
-    city = serializers.CharField(max_length=100)
-    address = serializers.CharField(max_length=255)
-    paymentType = serializers.CharField(max_length=50)
-    products = ProductSerializer(many=True)
+
+    createdAt = serializers.DateTimeField()
+    fullName = serializers.CharField(min_length=2, max_length=20)
+    email = serializers.EmailField()
+    phone = serializers.RegexField(
+        regex=r'^\+?\d{10,12}$',
+        error_messages={'invalid': 'Invalid phone number.'}
+    )
+    deliveryType = serializers.ChoiceField(choices=["free", "express", 'ordinary'])
+    paymentType = serializers.ChoiceField(choices=["online", "cash", "card"])
+    city = serializers.CharField(min_length=2, max_length=40)
+    address = serializers.CharField(min_length=10, max_length=200)

@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -15,7 +17,18 @@ class BasketItemAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def get_id_and_count(self, request):
-        return request.data.get("id"), request.data.get("count")
+
+        """ Функция парсит Json структуру данных для метода DELETE (возвращает id товара и количество) """
+
+        try:
+            body_unicode = request.body.decode('utf-8')
+            data = json.loads(body_unicode)
+            id = data.get('id')
+            count = data.get('count')
+            return id, count
+
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            return None, None
 
     def get(self, request):
 
@@ -36,7 +49,8 @@ class BasketItemAPIView(APIView):
 
     def post(self, request):
 
-        _id, count = self.get_id_and_count(request)
+        _id = request.data.get('id')
+        count = request.data.get('count')
 
         if not _id or not count:
             return Response({"error": "Product ID and count are required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -71,7 +85,6 @@ class BasketItemAPIView(APIView):
             return Response(products_data)
 
     def delete(self, request):
-
         _id, count = self.get_id_and_count(request)
 
         if not _id:
@@ -113,4 +126,3 @@ class BasketItemAPIView(APIView):
             basket.remove(_id, count)
             products_data = list(basket)
             return Response(products_data)
-
