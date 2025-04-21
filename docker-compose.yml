@@ -7,6 +7,13 @@ services:
     restart: always
     env_file:
       - .env
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./online-shop
+          target: /app
+        - action: rebuild
+          path: ./uv.lock
     depends_on:
       - pgdb
   pgdb:
