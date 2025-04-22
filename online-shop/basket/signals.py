@@ -1,8 +1,8 @@
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
-from basket.models import BasketItem, Basket
-from basket.session_cart import SessionCart
 
+from basket.models import Basket, BasketItem
+from basket.session_cart import SessionCart
 from product.models import Product
 
 
