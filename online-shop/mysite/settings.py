@@ -100,24 +100,24 @@ DATABASE_DIR = BASE_DIR / "database"
 DATABASE_DIR.mkdir(exist_ok=True)
 
 """ Расскоментировать, чтобы использовать sqlite3 для проекта (не забудьте закомментировать DATABASE ниже) """
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": DATABASE_DIR / "online_shop_database",
-    }
-}
-
-""" Закомментировать, если собираетесь запустить проект без использования POSTGRES"""
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('POSTGRES_DB'),
-#         'USER': os.environ.get('POSTGRES_USER'),
-#         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-#         'HOST': 'pgdb',
-#         'PORT': '5432',
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": DATABASE_DIR / "online_shop_database",
 #     }
 # }
+
+""" Закомментировать, если собираетесь запустить проект без использования POSTGRES"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': 'pgdb',
+        'PORT': '5432',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

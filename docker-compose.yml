@@ -14,8 +14,13 @@ services:
           target: /app
         - action: rebuild
           path: ./uv.lock
+    logging:
+      driver: loki
+      options:
+        loki-url: http://host.docker.internal:3100/loki/api/v1/push
     depends_on:
       - pgdb
+
   pgdb:
     image: postgres:14-alpine
     restart: always
@@ -26,6 +31,35 @@ services:
     container_name: pgdb
     volumes:
       - pgdbdata:/var/lib/postgresql/data/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 7s
+      timeout: 5s
+      retries: 3
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - monitoring
 
 volumes:
   pgdbdata:
+  grafanadata:
+
+networks:
+  monitoring:
+    driver: bridge
